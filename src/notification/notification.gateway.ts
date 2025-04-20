@@ -1,9 +1,125 @@
-import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { Logger } from '@nestjs/common';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  OnGatewayInit,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+} from '@nestjs/websockets';
+import { Server as WsServer, WebSocket } from 'ws';
+import { SessionService } from '../session/session.service';
+import { SessionEvent } from './session-event.enum';
 
-@WebSocketGateway()
-export class NotificationGateway {
-  @SubscribeMessage('message')
-  handleMessage(client: any, payload: any): string {
-    return 'Hello world!';
+import { AutomobileDto } from './dto/automobile.dto';
+import { ComparativaDto } from './dto/comparativa.dto';
+import { ProveedoresDto } from './dto/proveedores.dto';
+
+type IncomingMsg =
+  | { action: 'init'; sessionId: string }
+  | { action: 'subscribe'; event: SessionEvent };
+
+@WebSocketGateway({ path: '/ws/notification', cors: { origin: '*' } })
+export class NotificationGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
+  private readonly logger = new Logger(NotificationGateway.name);
+
+  @WebSocketServer() server: WsServer;
+
+  constructor(private readonly sessionService: SessionService) {}
+
+  // 1) Cuando el servidor arranca:
+  afterInit(server: WsServer) {
+    this.logger.log('NotificationGateway ready (ws://…/ws/notification)');
+  }
+
+  // 2) Cuando se conecta un cliente:
+  handleConnection(socket: WebSocket) {
+    let sessionId: string | null = null;
+    this.logger.log('Client connected (notification)');
+
+    socket.on('message', (raw) => {
+      let msg: IncomingMsg;
+      try {
+        msg = JSON.parse(raw.toString());
+      } catch {
+        this.logger.warn('Mensaje inválido (no JSON)');
+        return;
+      }
+
+      if (msg.action === 'init') {
+        sessionId = msg.sessionId;
+        socket.send(JSON.stringify({ type: 'initialized', sessionId }));
+        this.logger.log(`Session initialized: ${sessionId}`);
+      } else if (msg.action === 'subscribe' && sessionId) {
+        this.sessionService.subscribe(sessionId, msg.event, socket);
+        socket.send(JSON.stringify({ type: 'subscribed', event: msg.event }));
+        this.logger.log(
+          `Subscribed socket to event ${msg.event} for session ${sessionId}`,
+        );
+      }
+    });
+
+    socket.on('close', () => {
+      if (sessionId) {
+        this.sessionService.removeSocket(sessionId, socket);
+        this.logger.log(`Socket closed for session ${sessionId}`);
+      }
+    });
+  }
+
+  handleDisconnect(socket: WebSocket) {
+    this.logger.log('Client disconnected');
+  }
+
+  // 3) Métodos públicos bien tipados
+  public notifyAutomobile(sessionId: string, dto: AutomobileDto) {
+    this._notifySession(SessionEvent.Automobile, sessionId, {
+      items: dto.items,
+    });
+  }
+
+  public notifyComparativa(sessionId: string, dto: ComparativaDto) {
+    this._notifySession(SessionEvent.Comparativa, sessionId, {
+      comparison: dto.comparison,
+    });
+  }
+
+  public notifyProveedores(sessionId: string, dto: ProveedoresDto) {
+    this._notifySession(SessionEvent.Proveedores, sessionId, {
+      providers: dto.providers,
+    });
+  }
+
+  // Opcional: mantener compatibilidad con handleEvent
+  public handleEvent(event: SessionEvent, sessionId: string, payload: any) {
+    switch (event) {
+      case SessionEvent.Automobile:
+        return this.notifyAutomobile(sessionId, payload);
+      case SessionEvent.Comparativa:
+        return this.notifyComparativa(sessionId, payload);
+      case SessionEvent.Proveedores:
+        return this.notifyProveedores(sessionId, payload);
+      default:
+        this.logger.error(`Evento no soportado en gateway: ${event}`);
+    }
+  }
+
+  // Función interna genérica
+  private _notifySession(event: SessionEvent, sessionId: string, body: any) {
+    const subs = this.sessionService.getSubscribers(sessionId, event);
+    if (!subs) {
+      this.logger.warn(`No subscribers for ${event} / session ${sessionId}`);
+      return;
+    }
+    const msg = JSON.stringify({ event, payload: body });
+    subs.forEach((ws) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(msg);
+      }
+    });
+    this.logger.log(
+      `Notified ${subs.size} sockets of ${event} in session ${sessionId}`,
+    );
   }
 }

@@ -1,0 +1,46 @@
+# Define host y sessionId (reemplaza sessionId por el que obtengas del WS)
+@host = localhost:7000
+@sessionId = 03080314-84d5-4771-aa35-ea9e53ab892b
+
+### Ejecutar evento Automobile
+POST http://{{host}}/execute/automobile/{{sessionId}}
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "title": "Ferrari Portofino",
+      "model": "Portofino M",
+      "description": "Convertible grand tourer with a 3.5s 0–100 km/h time.",
+      "specs": {
+        "Horsepower": "612 hp",
+        "Top Speed": "320 km/h",
+        "0-100 km/h": "3.5 s",
+        "Engine": "V8 twin-turbo"
+      },
+      "image": "https://example.com/images/portofino.jpg"
+    }
+  ]
+}
+
+### Ejecutar evento Comparativa
+POST http://{{host}}/execute/comparativa/{{sessionId}}
+Content-Type: application/json
+
+{
+  "comparison": {
+    "Ferrari Portofino": { "0-100 km/h": "3.5 s" },
+    "Lamborghini Huracán": { "0-100 km/h": "2.9 s" }
+  }
+}
+
+### Ejecutar evento Proveedores
+POST http://{{host}}/execute/proveedores/{{sessionId}}
+Content-Type: application/json
+
+{
+  "providers": [
+    { "id": "1", "name": "Concesionario A", "location": "Buenos Aires" },
+    { "id": "2", "name": "Concesionario B", "location": "Córdoba" }
+  ]
+}

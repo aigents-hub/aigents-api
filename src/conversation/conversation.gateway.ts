@@ -5,13 +5,9 @@ import {
   OnGatewayInit,
 } from '@nestjs/websockets';
 import { Server as WsServer, WebSocket } from 'ws';
-import { v4 as uuidv4 } from 'uuid';
 import { OpenAIRealtimeWebSocket } from 'openai/beta/realtime/websocket';
+import { SessionService } from '../session/session.service';
 
-/**
- * WebSocket gateway handling real-time audio/text conversations.
- * Supports both plain echo mode and OpenAI Realtime mode.
- */
 @WebSocketGateway({ path: '/ws/conversation' })
 export class ConversationGateway implements OnGatewayInit {
   private readonly logger = new Logger(ConversationGateway.name);
@@ -19,19 +15,34 @@ export class ConversationGateway implements OnGatewayInit {
   @WebSocketServer()
   server: WsServer;
 
-  afterInit(server: WsServer) {
-    server.on('connection', (socket: WebSocket) => {
-      // Assign a unique session ID for each connection
-      const sessionId = uuidv4();
-      socket.send(sessionId);
-      this.logger.log(`Session opened: ${sessionId}`);
+  constructor(private readonly sessionService: SessionService) {}
 
+  afterInit(server: WsServer) {
+    server.on('connection', (socket: WebSocket, req: { url?: string }) => {
+      // 1) Extraer sessionId del query-string de la URL
+      const rawUrl = req.url || '';
+      const [, queryString] = rawUrl.split('?');
+      const params = new URLSearchParams(queryString);
+      const sessionId = params.get('sessionId');
+
+      if (!sessionId) {
+        this.logger.error(
+          'Conversation WS abierto sin sessionId → cerrando socket',
+        );
+        socket.close();
+        return;
+      }
+
+      this.logger.log(`New /ws/conversation connection [${sessionId}]`);
+
+      // 2) Preparar contexto y flags
+      this.sessionService.getContext(sessionId);
       const useOpenAI = process.env.USE_OPENAI_REALTIME === 'true';
       let rtClient: OpenAIRealtimeWebSocket | null = null;
       const pendingAudio: Buffer[] = [];
 
+      // Si usamos OpenAI, configuramos el cliente ahora
       if (useOpenAI) {
-        // Validate required environment variables
         const model = process.env.OPENAI_REALTIME_MODEL;
         const apiKey = process.env.OPENAI_API_KEY;
         if (!model || !apiKey) {
@@ -39,8 +50,6 @@ export class ConversationGateway implements OnGatewayInit {
             'OPENAI_REALTIME_MODEL and OPENAI_API_KEY must be defined',
           );
         }
-
-        // Initialize OpenAI Realtime client
         rtClient = new OpenAIRealtimeWebSocket(
           { model },
           {
@@ -50,9 +59,7 @@ export class ConversationGateway implements OnGatewayInit {
         );
 
         rtClient.socket.addEventListener('open', () => {
-          this.logger.log(`Realtime socket connected [${sessionId}]`);
-
-          // Send session configuration and system prompt
+          this.logger.log(`Realtime connected [${sessionId}]`);
           rtClient!.send({
             type: 'session.update',
             session: {
@@ -62,7 +69,9 @@ export class ConversationGateway implements OnGatewayInit {
               voice: 'alloy',
               input_audio_format: 'pcm16',
               output_audio_format: 'pcm16',
-              input_audio_transcription: { model: 'gpt-4o-mini-transcribe' },
+              input_audio_transcription: {
+                model: 'gpt-4o-mini-transcribe',
+              },
               turn_detection: {
                 type: 'server_vad',
                 threshold: 0.5,
@@ -75,8 +84,7 @@ export class ConversationGateway implements OnGatewayInit {
               max_response_output_tokens: 'inf',
             },
           });
-
-          // Flush any queued audio buffers
+          // Enviamos audio pendiente
           while (pendingAudio.length) {
             const buf = pendingAudio.shift()!;
             rtClient!.send({
@@ -86,14 +94,13 @@ export class ConversationGateway implements OnGatewayInit {
           }
         });
 
-        // Relay audio deltas from OpenAI back to the client
+        // Handle realtime responses...
         rtClient.on('response.audio.delta', (evt) => {
           const b64 = (evt as any).delta as string;
           socket.send(Buffer.from(b64, 'base64'));
         });
-
         rtClient.on('response.audio.done', () =>
-          this.logger.log(`Audio stream completed [${sessionId}]`),
+          this.logger.log(`Audio done [${sessionId}]`),
         );
         rtClient.on('response.done', () =>
           this.logger.log(`Response done [${sessionId}]`),
@@ -101,58 +108,41 @@ export class ConversationGateway implements OnGatewayInit {
         rtClient.on('error', (err) =>
           this.logger.error('OpenAI Realtime Error:', err),
         );
-
         rtClient.on('input_audio_buffer.speech_started', (evt) => {
           this.logger.log(
             `User interruption at ${evt.audio_start_ms}ms [${sessionId}]`,
           );
           rtClient!.send({ type: 'response.cancel' });
         });
-
         rtClient.on('input_audio_buffer.committed', () => {
           rtClient!.send({ type: 'response.create' });
         });
       }
 
-      // Handle incoming messages (text or binary audio)
+      // 3) Recibimos todos los mensajes (esperamos solo audio binario)
       socket.on('message', (data) => {
-        if (
-          typeof data === 'string' &&
-          rtClient &&
-          rtClient.socket.readyState === WebSocket.OPEN
-        ) {
-          this.logger.log(`User message [${sessionId}]: ${data}`);
-          rtClient.send({
-            type: 'conversation.item.create',
-            item: {
-              type: 'message',
-              role: 'user',
-              content: [{ type: 'input_text', text: data }],
-            },
-          });
-          rtClient.send({ type: 'response.create' });
-          return;
-        }
+        if (Buffer.isBuffer(data)) {
+          const buf = data as Buffer;
+          this.logger.log(
+            `Received audio (${buf.length} bytes) [${sessionId}]`,
+          );
 
-        const buf = data as Buffer;
-        this.logger.log(`Received audio (${buf.length} bytes) [${sessionId}]`);
-
-        if (useOpenAI && rtClient) {
-          if (rtClient.socket.readyState !== WebSocket.OPEN) {
-            pendingAudio.push(buf);
+          if (useOpenAI && rtClient) {
+            if (rtClient.socket.readyState !== WebSocket.OPEN) {
+              pendingAudio.push(buf);
+            } else {
+              rtClient.send({
+                type: 'input_audio_buffer.append',
+                audio: buf.toString('base64'),
+              });
+            }
           } else {
-            rtClient.send({
-              type: 'input_audio_buffer.append',
-              audio: buf.toString('base64'),
-            });
+            // Echo con delay de 3s cuando no usamos OpenAI
+            setTimeout(() => socket.send(buf), 3000);
           }
-        } else {
-          // Echo mode with 3-second delay
-          setTimeout(() => socket.send(buf), 3000);
         }
       });
 
-      // Clean up on disconnect
       socket.on('close', () => {
         this.logger.log(`Connection closed [${sessionId}]`);
         rtClient?.close();

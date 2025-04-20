@@ -1,0 +1,21 @@
+@host = localhost:7000
+
+### Crear sesión (IP real del cliente)
+POST http://{{host}}/session
+Content-Type: application/json
+
+###
+
+### Volver a crear/recuperar sesión (misma IP → mismo sessionId)
+POST http://{{host}}/session
+Content-Type: application/json
+
+###
+
+### Crear sesión simulando otra IP (cabecera X-Forwarded-For)
+POST http://{{host}}/session
+Content-Type: application/json
+X-Forwarded-For: 203.0.113.5
+
+###
+
