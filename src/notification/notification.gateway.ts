@@ -75,13 +75,13 @@ export class NotificationGateway
   // 3) Métodos públicos bien tipados
   public notifyAutomobile(sessionId: string, dto: AutomobileDto) {
     this._notifySession(SessionEvent.Automobile, sessionId, {
-      items: dto.items,
+      ...dto,
     });
   }
 
   public notifyComparativa(sessionId: string, dto: ComparativaDto) {
     this._notifySession(SessionEvent.Comparativa, sessionId, {
-      comparison: dto.comparison,
+      cars: dto.cars,
     });
   }
 

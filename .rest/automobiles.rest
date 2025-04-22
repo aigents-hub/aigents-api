@@ -1,0 +1,62 @@
+@host = localhost:7000
+
+### Buscar automóviles – ejemplo 1
+POST http://{{host}}/automobiles/search
+Content-Type: application/json
+
+{
+  "query": "Ferrari Portofino specifications"
+}
+
+###
+
+### Buscar automóviles – ejemplo 2
+POST http://{{host}}/automobiles/search
+Content-Type: application/json
+
+{
+  "query": "Tesla Model 3 range battery"
+}
+
+###
+
+### Buscar automóviles – ejemplo 3 (consulta vacía)
+POST http://{{host}}/automobiles/search
+Content-Type: application/json
+
+{
+  "query": ""
+}
+
+###
+
+#-------
+
+
+### Buscar automóviles – ejemplo 1
+POST http://{{host}}/automobiles/search/agent
+Content-Type: application/json
+
+{
+  "query": "Ferrari Portofino specifications"
+}
+
+###
+
+### Buscar automóviles – ejemplo 2
+POST http://{{host}}/automobiles/search/agent
+Content-Type: application/json
+
+{
+  "query": "Tesla Model 3 range battery"
+}
+
+###
+
+### Buscar automóviles – ejemplo 3 (consulta vacía)
+POST http://{{host}}/automobiles/search/agent
+Content-Type: application/json
+
+{
+  "query": ""
+}

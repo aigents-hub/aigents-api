@@ -1,16 +1,29 @@
-export interface Specification {
-  Horsepower: string;
-  'Top Speed': string;
-  '0-100 km/h': string;
-  Engine: string;
-}
+import { Car } from '../../models/car';
 
 export class AutomobileDto {
-  items: {
-    title: string;
-    model: string;
-    description: string;
-    specs: Specification;
-    image: string;
-  }[];
+  /**
+   * El coche “puro” según tu modelo central
+   */
+  car: Car;
+
+  /** URL de la imagen principal */
+  mainImage: string;
+
+  /** Descripción resumida (por ejemplo para listados) */
+  descriptionShort: string;
+
+  /** Descripción extensa (detalle interno) */
+  descriptionLong: string;
+
+  constructor(
+    car: Car,
+    mainImage: string,
+    descriptionShort: string,
+    descriptionLong: string,
+  ) {
+    this.car = car;
+    this.mainImage = mainImage;
+    this.descriptionShort = descriptionShort;
+    this.descriptionLong = descriptionLong;
+  }
 }
