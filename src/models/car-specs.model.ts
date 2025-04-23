@@ -27,7 +27,7 @@ export type CarStatus = 'Discontinued' | 'Available to order' | string;
 // Precio base
 export interface Price {
   currency: string;
-  amount: number;
+  amount?: number;
 }
 
 // Prestaciones
@@ -44,7 +44,7 @@ export interface Battery {
   tech: string;
   range: string;
   consumption: string;
-  recuperation: string;
+  recuperation?: string;
   heatPump: boolean;
 }
 
@@ -99,8 +99,8 @@ export interface Suspension {
 }
 export interface Cargo {
   trunk: string;
-  frunk: string;
-  towing: string;
+  frunk?: string;
+  towing?: string;
 }
 export interface Displays {
   center: string;
@@ -122,7 +122,7 @@ export interface Safety {
 }
 
 // Interfaz principal
-export interface Car {
+export interface CarSpecs {
   model: string;
   generation?: string;
   market?: string;
@@ -135,15 +135,20 @@ export interface Car {
 
   launch: LaunchInfo;
   status: CarStatus;
-  basePrices: Price[];
+  basePrices: Price;
   performance: Performance;
   body: Body;
   dimensions: Dimensions;
   weight: Weight;
   suspension: Suspension;
-  wheels: string[];
+  Wheels: Wheel[];
   cargo: Cargo;
   displays: Displays;
   comfort: Comfort;
   safety: Safety;
+}
+
+export interface Wheel {
+  name: string;
+  size: string;
 }

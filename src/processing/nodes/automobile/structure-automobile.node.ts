@@ -9,11 +9,7 @@ export const StructureAutomobileNode =
     logger.log(`📦 Nodo StructureAutomobileNode con ${raw.length} items`);
     const structured = await structureAgent.structure(raw);
     return {
-      commands: [
-        {
-          type: '__end__',
-          payload: { ...state, structuredData: structured },
-        },
-      ],
+      ...state,
+      structuredData: structured,
     };
   };

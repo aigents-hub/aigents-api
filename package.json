@@ -38,6 +38,7 @@
     "@types/ws": "^8.18.1",
     "cache-manager": "^6.4.2",
     "openai": "^4.95.1",
+    "playwright": "^1.52.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "swagger-ui-express": "^5.0.1",

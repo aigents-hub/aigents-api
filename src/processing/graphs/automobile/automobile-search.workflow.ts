@@ -7,14 +7,20 @@ import { SearchAutomobileNode } from '../../nodes/automobile/search-automobile.n
 import { StructureAutomobileNode } from '../../nodes/automobile/structure-automobile.node';
 import { SearchAutomobileAgent } from '../../agents/automobile/search-automobile.agent';
 import { StructureAutomobileAgent } from '../../agents/automobile/structure-automobile.agent';
+import { AutomobileVectorStoreService } from '../../../vector-store/automobile.vector-store.service';
+import { StoreAutomobileNode } from '../../nodes/automobile/store-automobile.node';
+import { SearchAutomobileBrowserNode } from '../../nodes/automobile/search-automobile-browser.node';
+import { SearchAutomobileBrowserAgent } from '../../agents/automobile/search-automobile-browser.agent';
 
 @Injectable()
 export class AutomobileSearchWorkflow {
   private readonly logger = new Logger(AutomobileSearchWorkflow.name);
 
   constructor(
+    private readonly searchAutomobileBrowserAgent: SearchAutomobileBrowserAgent,
     private readonly searchAgent: SearchAutomobileAgent,
     private readonly structureAgent: StructureAutomobileAgent,
+    private readonly vectorStore: AutomobileVectorStoreService,
   ) {}
 
   buildWorkflow(checkpointer?: false | BaseCheckpointSaver<number>) {
@@ -22,16 +28,24 @@ export class AutomobileSearchWorkflow {
       .addNode('AutomobileRoutingNode', AutomobileRoutingNode(this.logger))
       .addNode(
         'SearchAutomobileNode',
-        SearchAutomobileNode(this.logger, this.searchAgent),
+        SearchAutomobileBrowserNode(
+          this.logger,
+          this.searchAutomobileBrowserAgent,
+        ),
       )
       .addNode(
         'StructureAutomobileNode',
         StructureAutomobileNode(this.logger, this.structureAgent),
       )
+      .addNode(
+        'StoreAutomobileNode',
+        StoreAutomobileNode(this.logger, this.vectorStore),
+      )
       .addEdge('__start__', 'AutomobileRoutingNode')
       .addEdge('AutomobileRoutingNode', 'SearchAutomobileNode')
       .addEdge('SearchAutomobileNode', 'StructureAutomobileNode')
-      .addEdge('StructureAutomobileNode', '__end__');
+      .addEdge('StructureAutomobileNode', 'StoreAutomobileNode')
+      .addEdge('StoreAutomobileNode', '__end__');
 
     return graph.compile({ checkpointer });
   }

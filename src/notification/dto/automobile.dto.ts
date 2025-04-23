@@ -1,10 +1,10 @@
-import { Car } from '../../models/car';
+import { CarSpecs } from '../../models/car-specs.model';
 
 export class AutomobileDto {
   /**
    * El coche “puro” según tu modelo central
    */
-  car: Car;
+  car: CarSpecs;
 
   /** URL de la imagen principal */
   mainImage: string;
@@ -16,7 +16,7 @@ export class AutomobileDto {
   descriptionLong: string;
 
   constructor(
-    car: Car,
+    car: CarSpecs,
     mainImage: string,
     descriptionShort: string,
     descriptionLong: string,

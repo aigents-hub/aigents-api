@@ -9,11 +9,7 @@ export const SearchAutomobileNode =
     logger.log(`🚗 Nodo SearchAutomobileNode, query="${query}"`);
     const results = await searchAgent.search(query);
     return {
-      commands: [
-        {
-          type: 'StructureAutomobileNode',
-          payload: { ...state, searchResults: results },
-        },
-      ],
+      ...state,
+      searchResults: results,
     };
   };
