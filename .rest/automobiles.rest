@@ -72,7 +72,7 @@ Content-Type: application/json
 
 
 ### Buscar automóviles – búsqueda vectorial (vector store)
-/ POST http://{{host}}/automobiles/search/vector
+POST http://{{host}}/automobiles/search/vector
 Content-Type: application/json
 
 {
@@ -85,7 +85,7 @@ Content-Type: application/json
 ###
 
 ### Búsqueda vectorial – sin umbral (usa default)
-/ POST http://{{host}}/automobiles/search/vector
+POST http://{{host}}/automobiles/search/vector
 Content-Type: application/json
 
 {
@@ -96,7 +96,7 @@ Content-Type: application/json
 ###
 
 ### Búsqueda vectorial – consulta vacía (debe devolver []) 
-/ POST http://{{host}}/automobiles/search/vector
+POST http://{{host}}/automobiles/search/vector
 Content-Type: application/json
 
 {
