@@ -4,6 +4,7 @@ import { NotificationGateway } from '../notification/notification.gateway';
 import { AutomobileDto } from '../notification/dto/automobile.dto';
 import { ComparativaDto } from '../notification/dto/comparativa.dto';
 import { ProveedoresDto } from '../notification/dto/proveedores.dto';
+import { NewsDto } from '../notification/dto/news.dto';
 
 @Controller('execute')
 export class ExecuteController {
@@ -34,5 +35,11 @@ export class ExecuteController {
   ) {
     this.notification.notifyProveedores(sessionId, dto);
     return { status: `Proveedores procesado para sesión ${sessionId}` };
+  }
+
+  @Post('news/:sessionId')
+  executeNews(@Param('sessionId') sessionId: string, @Body() dto: NewsDto) {
+    this.notification.notifyNews(sessionId, dto);
+    return { status: `News procesado para sesión ${sessionId}` };
   }
 }

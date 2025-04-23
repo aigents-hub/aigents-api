@@ -1,0 +1,17 @@
+@host = localhost:7000
+
+### Nueva busqueda.
+POST http://{{host}}/news/search
+Content-Type: application/json
+
+{
+  "query": "latest automotive industry developments"
+}
+
+### Nueva busqueda Tesla.
+POST http://{{host}}/news/search
+Content-Type: application/json
+
+{
+"query": "What would be the latest Tesla"
+}

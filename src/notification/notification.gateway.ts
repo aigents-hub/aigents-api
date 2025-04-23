@@ -13,6 +13,7 @@ import { SessionEvent } from './session-event.enum';
 import { AutomobileDto } from './dto/automobile.dto';
 import { ComparativaDto } from './dto/comparativa.dto';
 import { ProveedoresDto } from './dto/proveedores.dto';
+import { NewsDto } from './dto/news.dto';
 
 type IncomingMsg =
   | { action: 'init'; sessionId: string }
@@ -91,6 +92,11 @@ export class NotificationGateway
     });
   }
 
+  /** Notifica un artículo de noticias */
+  public notifyNews(sessionId: string, dto: NewsDto) {
+    this._notifySession(SessionEvent.News, sessionId, { ...dto });
+  }
+
   // Opcional: mantener compatibilidad con handleEvent
   public handleEvent(event: SessionEvent, sessionId: string, payload: any) {
     switch (event) {
@@ -100,6 +106,8 @@ export class NotificationGateway
         return this.notifyComparativa(sessionId, payload);
       case SessionEvent.Proveedores:
         return this.notifyProveedores(sessionId, payload);
+      case SessionEvent.News:
+        return this.notifyNews(sessionId, payload);
       default:
         this.logger.error(`Evento no soportado en gateway: ${event}`);
     }
