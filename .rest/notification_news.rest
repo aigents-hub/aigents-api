@@ -2,8 +2,9 @@
 @sessionId = e187623d-70dc-435f-b521-194b34ff2cf2
 
 ### 1) Tesla Model S Long Range
-POST http://{{host}}/execute/automobile/{{sessionId}}
+POST http://{{host}}/execute/news/{{sessionId}}
 Content-Type: application/json
+
 [
   {
     "title": "Refreshed Tesla Model Y",

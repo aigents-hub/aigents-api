@@ -141,7 +141,7 @@ export interface CarSpecs {
   dimensions: Dimensions;
   weight: Weight;
   suspension: Suspension;
-  weels: Wheel[];
+  wheels: Wheel[];
   cargo: Cargo;
   displays: Displays;
   comfort: Comfort;

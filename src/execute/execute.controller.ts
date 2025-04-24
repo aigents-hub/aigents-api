@@ -38,7 +38,7 @@ export class ExecuteController {
   }
 
   @Post('news/:sessionId')
-  executeNews(@Param('sessionId') sessionId: string, @Body() dto: NewsDto) {
+  executeNews(@Param('sessionId') sessionId: string, @Body() dto: NewsDto[]) {
     this.notification.notifyNews(sessionId, dto);
     return { status: `News procesado para sesión ${sessionId}` };
   }

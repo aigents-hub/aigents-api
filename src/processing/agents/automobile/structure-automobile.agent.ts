@@ -203,7 +203,7 @@ Formato de salida deseado:
           })
           .describe('Sistema de suspensión'),
 
-        Wheels: z
+        wheels: z
           .array(
             z
               .object({

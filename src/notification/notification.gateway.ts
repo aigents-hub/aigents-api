@@ -93,7 +93,7 @@ export class NotificationGateway
   }
 
   /** Notifica un artículo de noticias */
-  public notifyNews(sessionId: string, dto: NewsDto) {
+  public notifyNews(sessionId: string, dto: NewsDto[]) {
     this._notifySession(SessionEvent.News, sessionId, { ...dto });
   }
 
