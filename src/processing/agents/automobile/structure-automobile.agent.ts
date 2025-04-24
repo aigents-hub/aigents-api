@@ -5,6 +5,7 @@ import { ChatPromptTemplate } from '@langchain/core/prompts';
 import { RunnableSequence } from '@langchain/core/runnables';
 import { StructuredOutputParser } from '@langchain/core/output_parsers';
 import { z } from 'zod';
+import { v4 as uuidv4 } from 'uuid';
 
 import { Car } from '../../../models/car.model';
 import { DriveType } from '../../../models/car-specs.model';
@@ -56,7 +57,13 @@ Formato de salida deseado:
 
     const format_instructions = this.createParser().getFormatInstructions();
 
-    return this.chain.invoke({ raw, format_instructions });
+    const cars = await this.chain.invoke({ raw, format_instructions });
+
+    cars.forEach((car) => {
+      car.id = uuidv4();
+    });
+
+    return cars;
   }
 
   /**
@@ -272,8 +279,25 @@ Formato de salida deseado:
 
     const carDtoSchema = z
       .object({
+        id: z
+          .string()
+          .uuid()
+          .default(() => uuidv4())
+          .describe('UUID generado automáticamente'),
         specs: specsSchema,
-        mainImage: z.string().url().describe('URL de la imagen principal'),
+        images: z
+          .array(
+            z.object({
+              url: z.string().url().default('').describe('URL de la imagen'),
+              description: z
+                .string()
+                .optional()
+                .default('')
+                .describe('Texto alternativo'),
+            }),
+          )
+          .default([])
+          .describe('Lista de imágenes adicionales; por defecto vacía'),
         descriptionShort: z.string().describe('Texto corto descriptivo'),
         descriptionLong: z.string().describe('Texto largo detallado'),
       })

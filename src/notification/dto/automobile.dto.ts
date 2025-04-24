@@ -1,14 +1,14 @@
-// src/notification/dto/automobile.dto.ts
-import { Car } from '../../models/car.model';
+import { Car, CarImage } from '../../models/car.model';
 
 export class AutomobileDto implements Car {
+  id: string;
   /**
    * Todas las especificaciones del coche, tal como en tu modelo central
    */
   specs: Car['specs'];
 
   /** URL de la imagen principal */
-  mainImage: Car['mainImage'];
+  images: CarImage[];
 
   /** Descripción corta (p.ej. para listados) */
   descriptionShort: Car['descriptionShort'];
@@ -17,8 +17,9 @@ export class AutomobileDto implements Car {
   descriptionLong: Car['descriptionLong'];
 
   constructor(car: Car) {
+    this.id = car.id;
     this.specs = car.specs;
-    this.mainImage = car.mainImage;
+    this.images = car.images;
     this.descriptionShort = car.descriptionShort;
     this.descriptionLong = car.descriptionLong;
   }

@@ -9,6 +9,7 @@ import { SessionService } from './session/session.service';
 
 import { ExecuteController } from './execute/execute.controller';
 import { SessionController } from './session/session.controller';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { SessionController } from './session/session.controller';
       isGlobal: true,
       envFilePath: '.env',
     }),
-
+    // Importa el módulo de imágenes
+    ImageModule,
     // Importa el módulo de búsqueda de automóviles
     SearchAutomobileModule,
   ],
