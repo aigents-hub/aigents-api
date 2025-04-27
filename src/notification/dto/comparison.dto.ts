@@ -1,7 +1,7 @@
 // src/notification/dto/comparativa.dto.ts
 import { AutomobileDto } from './automobile.dto';
 
-export class ComparativaDto {
+export class ComparisonDto {
   /**
    * Hasta 3 automóviles para comparar.
    * Se reutiliza exactamente la misma estructura que en AutomobileDto.

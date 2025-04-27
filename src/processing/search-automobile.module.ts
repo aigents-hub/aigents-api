@@ -25,6 +25,10 @@ import { NewsSearchWorkflow } from './graphs/news/news-search.workflow';
     StructureAutomobileAgent,
     AutomobileSearchWorkflow,
   ],
-  exports: [SearchAutomobileAgent, AutomobileSearchWorkflow],
+  exports: [
+    SearchAutomobileAgent,
+    AutomobileSearchWorkflow,
+    NewsSearchWorkflow,
+  ],
 })
 export class SearchAutomobileModule {}

@@ -1,7 +1,7 @@
 export enum SessionEvent {
   Automobile = 'Automobile',
-  Comparativa = 'Comparativa',
-  Proveedores = 'Proveedores',
+  Comparison = 'Comparison',
+  Providers = 'Providers',
   News = 'News',
-  Searching = 'searching',
+  Searching = 'Searching',
 }

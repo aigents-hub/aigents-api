@@ -127,26 +127,38 @@ export class ConversationGateway implements OnGatewayInit {
                 {
                   name: 'compare_automobile',
                   description:
-                    'Compare two or three automobile specifications given their names',
+                    'Compare specifications of two or three automobiles given a list of search terms',
                   parameters: {
                     type: 'object',
                     properties: {
-                      query: {
-                        type: 'string',
-                        description: 'Comparison query for automobiles',
-                      },
-                      make: {
-                        type: 'string',
+                      items: {
+                        type: 'array',
                         description:
-                          'Optional. Automobile make/brand to filter results',
-                      },
-                      model: {
-                        type: 'string',
-                        description:
-                          'Optional. Automobile model to filter results',
+                          'List of search items for automobiles (max 3)',
+                        items: {
+                          type: 'object',
+                          properties: {
+                            query: {
+                              type: 'string',
+                              description: 'Search terms for automobiles',
+                            },
+                            make: {
+                              type: 'string',
+                              description:
+                                'Optional. Automobile make/brand to filter results',
+                            },
+                            model: {
+                              type: 'string',
+                              description:
+                                'Optional. Automobile model to filter results',
+                            },
+                          },
+                          required: ['query'],
+                        },
+                        maxItems: 3,
                       },
                     },
-                    required: ['query'],
+                    required: ['items'],
                   },
                   type: 'function',
                 },
@@ -229,10 +241,24 @@ export class ConversationGateway implements OnGatewayInit {
               );
               break;
             case 'compare_automobile':
-              // …tu lógica de compare…
+              this.logger.log(`Call Tool compare_automobile`);
+              await this.autoTool.handleCompareFunctionCall(
+                sessionId,
+                call_id,
+                args.items,
+                rtClient!,
+              );
               break;
             case 'news_automobiles':
-              // …tu lógica de news…
+              this.logger.log(`Call Tool news_automobiles`);
+              await this.autoTool.handleNewsFunctionCall(
+                sessionId,
+                call_id,
+                args.query,
+                rtClient!,
+                args.make,
+                args.model,
+              );
               break;
             default:
               this.logger.error(`Unknown tool ${name}`);

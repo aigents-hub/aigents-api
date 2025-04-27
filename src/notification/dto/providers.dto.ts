@@ -1,4 +1,4 @@
-export class ProveedoresDto {
+export class ProvidersDto {
   providers: {
     id: string;
     name: string;

@@ -1,8 +1,8 @@
 @host = localhost:7000
 @sessionId = e187623d-70dc-435f-b521-194b34ff2cf2
 
-### Comparativa de los tres
-POST http://{{host}}/execute/comparativa/{{sessionId}}
+### comparison de los tres
+POST http://{{host}}/execute/comparison/{{sessionId}}
 Content-Type: application/json
 
 {

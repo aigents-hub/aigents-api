@@ -2,8 +2,8 @@ import { Body, Controller, Param, Post } from '@nestjs/common';
 import { NotificationGateway } from './notification.gateway';
 
 import { AutomobileDto } from './dto/automobile.dto';
-import { ComparativaDto } from './dto/comparativa.dto';
-import { ProveedoresDto } from './dto/proveedores.dto';
+import { ComparisonDto } from './dto/comparison.dto';
+import { ProvidersDto } from './dto/providers.dto';
 import { NewsDto } from './dto/news.dto';
 import { SearchingDto } from './dto/searching.dto';
 
@@ -17,31 +17,31 @@ export class ExecuteController {
     @Body() dto: AutomobileDto,
   ) {
     this.notification.notifyAutomobile(sessionId, dto);
-    return { status: `Automobile procesado para sesión ${sessionId}` };
+    return { status: `Automobile processed for session ${sessionId}` };
   }
 
-  @Post('comparativa/:sessionId')
-  executeComparativa(
+  @Post('comparison/:sessionId')
+  executeComparison(
     @Param('sessionId') sessionId: string,
-    @Body() dto: ComparativaDto,
+    @Body() dto: ComparisonDto,
   ) {
-    this.notification.notifyComparativa(sessionId, dto);
-    return { status: `Comparativa procesado para sesión ${sessionId}` };
+    this.notification.notifyComparison(sessionId, dto);
+    return { status: `Comparison processed for session ${sessionId}` };
   }
 
-  @Post('proveedores/:sessionId')
-  executeProveedores(
+  @Post('providers/:sessionId')
+  executeProviders(
     @Param('sessionId') sessionId: string,
-    @Body() dto: ProveedoresDto,
+    @Body() dto: ProvidersDto,
   ) {
-    this.notification.notifyProveedores(sessionId, dto);
-    return { status: `Proveedores procesado para sesión ${sessionId}` };
+    this.notification.notifyProviders(sessionId, dto);
+    return { status: `Providers processed for session ${sessionId}` };
   }
 
   @Post('news/:sessionId')
   executeNews(@Param('sessionId') sessionId: string, @Body() dto: NewsDto[]) {
     this.notification.notifyNews(sessionId, dto);
-    return { status: `News procesado para sesión ${sessionId}` };
+    return { status: `News processed for session ${sessionId}` };
   }
 
   @Post('searching/:sessionId')

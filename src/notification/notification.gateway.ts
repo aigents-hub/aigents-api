@@ -11,8 +11,8 @@ import { SessionService } from '../session/session.service';
 import { SessionEvent } from './session-event.enum';
 
 import { AutomobileDto } from './dto/automobile.dto';
-import { ComparativaDto } from './dto/comparativa.dto';
-import { ProveedoresDto } from './dto/proveedores.dto';
+import { ComparisonDto } from './dto/comparison.dto';
+import { ProvidersDto } from './dto/providers.dto';
 import { NewsDto } from './dto/news.dto';
 
 type IncomingMsg =
@@ -29,12 +29,12 @@ export class NotificationGateway
 
   constructor(private readonly sessionService: SessionService) {}
 
-  // 1) Cuando el servidor arranca:
+  /** 1) Cuando el servidor arranca */
   afterInit(server: WsServer) {
     this.logger.log('NotificationGateway ready (ws://…/ws/notification)');
   }
 
-  // 2) Cuando se conecta un cliente:
+  /** 2) Cuando se conecta un cliente */
   handleConnection(socket: WebSocket) {
     let sessionId: string | null = null;
     this.logger.log('Client connected (notification)');
@@ -73,21 +73,19 @@ export class NotificationGateway
     this.logger.log('Client disconnected');
   }
 
-  // 3) Métodos públicos bien tipados
+  /** 3) Métodos públicos bien tipados */
   public notifyAutomobile(sessionId: string, dto: AutomobileDto) {
-    this._notifySession(SessionEvent.Automobile, sessionId, {
-      ...dto,
-    });
+    this._notifySession(SessionEvent.Automobile, sessionId, { ...dto });
   }
 
-  public notifyComparativa(sessionId: string, dto: ComparativaDto) {
-    this._notifySession(SessionEvent.Comparativa, sessionId, {
+  public notifyComparison(sessionId: string, dto: ComparisonDto) {
+    this._notifySession(SessionEvent.Comparison, sessionId, {
       cars: dto.cars,
     });
   }
 
-  public notifyProveedores(sessionId: string, dto: ProveedoresDto) {
-    this._notifySession(SessionEvent.Proveedores, sessionId, {
+  public notifyProviders(sessionId: string, dto: ProvidersDto) {
+    this._notifySession(SessionEvent.Providers, sessionId, {
       providers: dto.providers,
     });
   }
@@ -106,15 +104,15 @@ export class NotificationGateway
     });
   }
 
-  // Opcional: mantener compatibilidad con handleEvent
+  /** Compatibilidad con handleEvent */
   public handleEvent(event: SessionEvent, sessionId: string, payload: any) {
     switch (event) {
       case SessionEvent.Automobile:
         return this.notifyAutomobile(sessionId, payload);
-      case SessionEvent.Comparativa:
-        return this.notifyComparativa(sessionId, payload);
-      case SessionEvent.Proveedores:
-        return this.notifyProveedores(sessionId, payload);
+      case SessionEvent.Comparison:
+        return this.notifyComparison(sessionId, payload);
+      case SessionEvent.Providers:
+        return this.notifyProviders(sessionId, payload);
       case SessionEvent.News:
         return this.notifyNews(sessionId, payload);
       case SessionEvent.Searching:
@@ -124,7 +122,7 @@ export class NotificationGateway
     }
   }
 
-  // Función interna genérica
+  /** Función interna genérica */
   private _notifySession(event: SessionEvent, sessionId: string, body: any) {
     const subs = this.sessionService.getSubscribers(sessionId, event);
     if (!subs) {
