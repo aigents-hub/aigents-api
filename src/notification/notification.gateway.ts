@@ -97,6 +97,15 @@ export class NotificationGateway
     this._notifySession(SessionEvent.News, sessionId, { ...dto });
   }
 
+  /**
+   * Notifica el estado de búsqueda (true/false)
+   */
+  public notifySearching(sessionId: string, isSearching: boolean) {
+    this._notifySession(SessionEvent.Searching, sessionId, {
+      searching: isSearching,
+    });
+  }
+
   // Opcional: mantener compatibilidad con handleEvent
   public handleEvent(event: SessionEvent, sessionId: string, payload: any) {
     switch (event) {
@@ -108,6 +117,8 @@ export class NotificationGateway
         return this.notifyProveedores(sessionId, payload);
       case SessionEvent.News:
         return this.notifyNews(sessionId, payload);
+      case SessionEvent.Searching:
+        return this.notifySearching(sessionId, payload.searching);
       default:
         this.logger.error(`Evento no soportado en gateway: ${event}`);
     }

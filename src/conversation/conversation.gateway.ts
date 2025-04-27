@@ -4,9 +4,13 @@ import {
   WebSocketServer,
   OnGatewayInit,
 } from '@nestjs/websockets';
+
 import { Server as WsServer, WebSocket } from 'ws';
 import { OpenAIRealtimeWebSocket } from 'openai/beta/realtime/websocket';
 import { SessionService } from '../session/session.service';
+
+import { AutomobileToolService } from './tools/automobile-tool.service';
+import { ResponseStateService } from './response-state.service';
 
 @WebSocketGateway({ path: '/ws/conversation' })
 export class ConversationGateway implements OnGatewayInit {
@@ -15,11 +19,14 @@ export class ConversationGateway implements OnGatewayInit {
   @WebSocketServer()
   server: WsServer;
 
-  constructor(private readonly sessionService: SessionService) {}
+  constructor(
+    private readonly responseState: ResponseStateService,
+    private readonly sessionService: SessionService,
+    private readonly autoTool: AutomobileToolService,
+  ) {}
 
   afterInit(server: WsServer) {
     server.on('connection', (socket: WebSocket, req: { url?: string }) => {
-      // 1) Extraer sessionId del query-string de la URL
       const rawUrl = req.url || '';
       const [, queryString] = rawUrl.split('?');
       const params = new URLSearchParams(queryString);
@@ -35,13 +42,11 @@ export class ConversationGateway implements OnGatewayInit {
 
       this.logger.log(`New /ws/conversation connection [${sessionId}]`);
 
-      // 2) Preparar contexto y flags
       this.sessionService.getContext(sessionId);
       const useOpenAI = process.env.USE_OPENAI_REALTIME === 'true';
       let rtClient: OpenAIRealtimeWebSocket | null = null;
       const pendingAudio: Buffer[] = [];
 
-      // Si usamos OpenAI, configuramos el cliente ahora
       if (useOpenAI) {
         const model = process.env.OPENAI_REALTIME_MODEL;
         const apiKey = process.env.OPENAI_API_KEY;
@@ -64,8 +69,19 @@ export class ConversationGateway implements OnGatewayInit {
             type: 'session.update',
             session: {
               modalities: ['audio', 'text'],
-              instructions:
-                'You are a vehicle support assistant. Only answer vehicle-related queries.',
+              instructions: `
+      You are an AIgents Vehicle Support Assistant. Your sole purpose is to answer vehicle-related queries accurately and concisely, using only the information in your context or retrieved via the available tools. You MUST NOT hallucinate or provide information outside this scope.  
+
+      When you need more data, invoke the appropriate tool:
+        • search_automobile to look up vehicle listings
+        • compare_automobile to compare specs of two or three models
+        • news_automobiles to fetch the latest auto news
+
+      If a tool call may take time, respond with:
+        “Please wait a moment while I retrieve that information.”
+
+      Always keep answers focused on vehicles and guide the user to wait or use the right tool when needed.
+        `.trim(),
               voice: 'alloy',
               input_audio_format: 'pcm16',
               output_audio_format: 'pcm16',
@@ -82,9 +98,87 @@ export class ConversationGateway implements OnGatewayInit {
               },
               temperature: 0.8,
               max_response_output_tokens: 'inf',
+              tools: [
+                {
+                  name: 'search_automobile',
+                  description: 'Search for automobiles given a text query',
+                  parameters: {
+                    type: 'object',
+                    properties: {
+                      query: {
+                        type: 'string',
+                        description: 'Search terms for automobiles',
+                      },
+                      make: {
+                        type: 'string',
+                        description:
+                          'Optional. Automobile make/brand to filter results',
+                      },
+                      model: {
+                        type: 'string',
+                        description:
+                          'Optional. Automobile model to filter results',
+                      },
+                    },
+                    required: ['query'],
+                  },
+                  type: 'function',
+                },
+                {
+                  name: 'compare_automobile',
+                  description:
+                    'Compare two or three automobile specifications given their names',
+                  parameters: {
+                    type: 'object',
+                    properties: {
+                      query: {
+                        type: 'string',
+                        description: 'Comparison query for automobiles',
+                      },
+                      make: {
+                        type: 'string',
+                        description:
+                          'Optional. Automobile make/brand to filter results',
+                      },
+                      model: {
+                        type: 'string',
+                        description:
+                          'Optional. Automobile model to filter results',
+                      },
+                    },
+                    required: ['query'],
+                  },
+                  type: 'function',
+                },
+                {
+                  name: 'news_automobiles',
+                  description:
+                    'Fetch latest automotive news matching a search query',
+                  parameters: {
+                    type: 'object',
+                    properties: {
+                      query: {
+                        type: 'string',
+                        description: 'News search terms',
+                      },
+                      make: {
+                        type: 'string',
+                        description:
+                          'Optional. Automobile make/brand to filter news',
+                      },
+                      model: {
+                        type: 'string',
+                        description:
+                          'Optional. Automobile model to filter news',
+                      },
+                    },
+                    required: ['query'],
+                  },
+                  type: 'function',
+                },
+              ],
             },
           });
-          // Enviamos audio pendiente
           while (pendingAudio.length) {
             const buf = pendingAudio.shift()!;
             rtClient!.send({
@@ -94,8 +188,66 @@ export class ConversationGateway implements OnGatewayInit {
           }
         });
 
+        let pendingFn: { call_id: string; name: string } | null = null;
+        let argBuffer = '';
+        this.responseState.setResponding(sessionId, false);
+
+        rtClient.on('response.function_call_arguments.delta', (evt) => {
+          argBuffer += (evt as any).delta;
+        });
+        rtClient.on('response.content_part.added', (evt) => {
+          const { response_id, item_id, output_index, content_index } =
+            evt as any;
+          const deltaText = (evt as any).delta as string;
+        });
+
+        rtClient.on('response.content_part.done', (evt) => {});
+
+        rtClient.on('response.function_call_arguments.done', async (evt) => {
+          if (!pendingFn) return;
+          let args: any;
+          try {
+            args = JSON.parse(argBuffer);
+          } catch (e) {
+            this.logger.error('Error parsing args', e);
+            pendingFn = null;
+            return;
+          }
+
+          // *** Aquí llamas a tu servicio de herramienta ***
+          const { call_id, name } = pendingFn;
+          switch (name) {
+            case 'search_automobile':
+              this.logger.log(`Call Tool search_automobile`);
+              await this.autoTool.handleSearchFunctionCall(
+                sessionId,
+                call_id,
+                args.query,
+                rtClient!,
+                args.make,
+                args.model,
+              );
+              break;
+            case 'compare_automobile':
+              // …tu lógica de compare…
+              break;
+            case 'news_automobiles':
+              // …tu lógica de news…
+              break;
+            default:
+              this.logger.error(`Unknown tool ${name}`);
+          }
+
+          // limpiamos para la próxima llamada
+          pendingFn = null;
+        });
+        rtClient.on('response.done', () => {
+          this.responseState.setResponding(sessionId, true);
+        });
+
         // Handle realtime responses...
         rtClient.on('response.audio.delta', (evt) => {
+          this.responseState.setResponding(sessionId, false);
           const b64 = (evt as any).delta as string;
           socket.send(Buffer.from(b64, 'base64'));
         });
@@ -112,10 +264,16 @@ export class ConversationGateway implements OnGatewayInit {
           this.logger.log(
             `User interruption at ${evt.audio_start_ms}ms [${sessionId}]`,
           );
-          rtClient!.send({ type: 'response.cancel' });
         });
-        rtClient.on('input_audio_buffer.committed', () => {
-          rtClient!.send({ type: 'response.create' });
+        rtClient!.on('conversation.item.created', async (evt) => {
+          const item = (evt as any).item;
+          // Sólo nos interesa cuando el LLM inicia una function_call
+          if (item.type === 'function_call') {
+            // Guardamos siempre el call_id y el name
+            pendingFn = { call_id: item.call_id, name: item.name };
+            // Vaciamos el buffer de argumentos para arrancar limpio
+            argBuffer = '';
+          }
         });
       }
 
@@ -123,10 +281,6 @@ export class ConversationGateway implements OnGatewayInit {
       socket.on('message', (data) => {
         if (Buffer.isBuffer(data)) {
           const buf = data as Buffer;
-          this.logger.log(
-            `Received audio (${buf.length} bytes) [${sessionId}]`,
-          );
-
           if (useOpenAI && rtClient) {
             if (rtClient.socket.readyState !== WebSocket.OPEN) {
               pendingAudio.push(buf);

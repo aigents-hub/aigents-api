@@ -31,10 +31,19 @@ export class SearchAutomobileController {
   @Post('vector')
   async searchVector(
     @Body('query') query: string,
+    @Body('make') make?: string,
+    @Body('model') model?: string,
     @Body('threshold') threshold = 0.0,
     @Body('limit') limit = 10,
     @Body('offset') offset = 0,
   ): Promise<SearchResult[]> {
-    return this.vectorStore.searchCars(query, threshold, limit, offset);
+    return this.vectorStore.searchCars(
+      query,
+      make,
+      model,
+      threshold,
+      limit,
+      offset,
+    );
   }
 }

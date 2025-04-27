@@ -1,15 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 import { SearchAutomobileModule } from './processing/search-automobile.module';
-
-import { NotificationGateway } from './notification/notification.gateway';
-import { ConversationGateway } from './conversation/conversation.gateway';
-import { SessionService } from './session/session.service';
-
-import { ExecuteController } from './execute/execute.controller';
-import { SessionController } from './session/session.controller';
 import { ImageModule } from './image/image.module';
+
+import { ConversationModule } from './conversation/conversation.module';
+import { SessionModule } from './session/session.module';
 
 @Module({
   imports: [
@@ -17,12 +14,15 @@ import { ImageModule } from './image/image.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    EventEmitterModule.forRoot(),
     // Importa el módulo de imágenes
     ImageModule,
     // Importa el módulo de búsqueda de automóviles
     SearchAutomobileModule,
+    // Importa el módulo de conversación
+    ConversationModule,
+    // Importa el módulo de sesión
+    SessionModule,
   ],
-  controllers: [ExecuteController, SessionController],
-  providers: [SessionService, ConversationGateway, NotificationGateway],
 })
 export class AppModule {}

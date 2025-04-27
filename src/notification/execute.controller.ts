@@ -1,10 +1,11 @@
 import { Body, Controller, Param, Post } from '@nestjs/common';
-import { NotificationGateway } from '../notification/notification.gateway';
+import { NotificationGateway } from './notification.gateway';
 
-import { AutomobileDto } from '../notification/dto/automobile.dto';
-import { ComparativaDto } from '../notification/dto/comparativa.dto';
-import { ProveedoresDto } from '../notification/dto/proveedores.dto';
-import { NewsDto } from '../notification/dto/news.dto';
+import { AutomobileDto } from './dto/automobile.dto';
+import { ComparativaDto } from './dto/comparativa.dto';
+import { ProveedoresDto } from './dto/proveedores.dto';
+import { NewsDto } from './dto/news.dto';
+import { SearchingDto } from './dto/searching.dto';
 
 @Controller('execute')
 export class ExecuteController {
@@ -41,5 +42,14 @@ export class ExecuteController {
   executeNews(@Param('sessionId') sessionId: string, @Body() dto: NewsDto[]) {
     this.notification.notifyNews(sessionId, dto);
     return { status: `News procesado para sesión ${sessionId}` };
+  }
+
+  @Post('searching/:sessionId')
+  executeSearching(
+    @Param('sessionId') sessionId: string,
+    @Body() dto: SearchingDto,
+  ) {
+    this.notification.notifySearching(sessionId, dto.searching);
+    return { status: `Searching state processed for session ${sessionId}` };
   }
 }

@@ -47,23 +47,46 @@ export class AutomobileVectorStoreService extends BaseVectorStoreService {
    */
   async searchCars(
     query: string,
-    threshold = 0.0,
-    limit = 10,
+    make?: string,
+    model?: string,
+    threshold = 0.4,
+    limit = 1,
     offset = 0,
   ): Promise<SearchResult[]> {
-    // 1) Genera embedding de la consulta
+    // 1) Generar embedding
     const queryVector = await this.generateEmbedding(query);
 
-    // 2) Ejecuta la búsqueda en Qdrant
+    // 2) Construir filtro estático
+    let qdrantFilter: Record<string, unknown> | undefined = undefined;
+    const mustClauses: any[] = [];
+
+    if (make) {
+      mustClauses.push({
+        key: 'car.specs.make',
+        match: { value: make },
+      });
+    }
+    if (model) {
+      mustClauses.push({
+        key: 'car.specs.model',
+        match: { value: model },
+      });
+    }
+    if (mustClauses.length) {
+      qdrantFilter = { must: mustClauses };
+    }
+
+    // 3) Ejecutar búsqueda vectorial + filtro
     const resp = await this.client.search(this.collection, {
       vector: queryVector,
       limit,
       offset,
       with_payload: true,
       score_threshold: threshold,
+      filter: qdrantFilter,
     });
 
-    // 3) Mapea a tu interfaz de resultados
+    // 4) Mapear resultados
     return resp.map((r) => ({
       id: r.id.toString(),
       score: r.score,
