@@ -1,5 +1,5 @@
 @host = localhost:7000
-@sessionId = e187623d-70dc-435f-b521-194b34ff2cf2
+@sessionId = 063a4192-4056-404e-a227-47fc987e66af
 
 ### comparison de los tres
 POST http://{{host}}/execute/comparison/{{sessionId}}

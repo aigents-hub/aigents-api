@@ -9,15 +9,12 @@ import { SearchAutomobileAgent } from '../../agents/automobile/search-automobile
 import { StructureAutomobileAgent } from '../../agents/automobile/structure-automobile.agent';
 import { AutomobileVectorStoreService } from '../../../vector-store/automobile.vector-store.service';
 import { StoreAutomobileNode } from '../../nodes/automobile/store-automobile.node';
-import { SearchAutomobileBrowserNode } from '../../nodes/automobile/search-automobile-browser.node';
-import { SearchAutomobileBrowserAgent } from '../../agents/automobile/search-automobile-browser.agent';
 
 @Injectable()
 export class AutomobileSearchWorkflow {
   private readonly logger = new Logger(AutomobileSearchWorkflow.name);
 
   constructor(
-    private readonly searchAutomobileBrowserAgent: SearchAutomobileBrowserAgent,
     private readonly searchAgent: SearchAutomobileAgent,
     private readonly structureAgent: StructureAutomobileAgent,
     private readonly vectorStore: AutomobileVectorStoreService,
@@ -28,10 +25,7 @@ export class AutomobileSearchWorkflow {
       .addNode('AutomobileRoutingNode', AutomobileRoutingNode(this.logger))
       .addNode(
         'SearchAutomobileNode',
-        SearchAutomobileBrowserNode(
-          this.logger,
-          this.searchAutomobileBrowserAgent,
-        ),
+        SearchAutomobileNode(this.logger, this.searchAgent),
       )
       .addNode(
         'StructureAutomobileNode',

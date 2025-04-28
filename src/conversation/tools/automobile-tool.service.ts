@@ -67,8 +67,6 @@ export class AutomobileToolService {
     this.logger.log('No immediate matches.');
     // Notify front-end that a deeper search is in progress
     this.notification.notifySearching(sessionId, true);
-    const waitForLLM = this.responseState.waitUntilNotResponding(sessionId);
-
     this.workflow
       .buildWorkflow()
       .invoke({ query })
@@ -76,7 +74,6 @@ export class AutomobileToolService {
         const deepResults = finalState.structuredData;
         this.logger.log(`Found car with deeper search: ${deepResults[0].id}`);
 
-        await waitForLLM;
         const dto: Car = { ...deepResults[0] };
 
         // Stop "searching" indicator

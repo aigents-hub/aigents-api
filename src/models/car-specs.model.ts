@@ -9,8 +9,8 @@ export enum DriveType {
 export interface Combustion {
   fuelType: string;
   displacement?: string;
-  power: string;
-  torque: string;
+  power?: string;
+  torque?: string;
   consumption?: string;
   emissions?: string;
 }
@@ -18,7 +18,7 @@ export interface Combustion {
 // Información de lanzamiento
 export interface LaunchInfo {
   announced: string;
-  released: string;
+  released?: string;
 }
 
 // Estado del coche
@@ -32,10 +32,10 @@ export interface Price {
 
 // Prestaciones
 export interface Performance {
-  power: string;
-  torque: string;
-  acceleration: string;
-  maxSpeed: string;
+  power?: string;
+  torque?: string;
+  acceleration?: string;
+  maxSpeed?: string;
 }
 
 // Batería (eléctricos e híbridos)
@@ -43,7 +43,7 @@ export interface Battery {
   capacity: string;
   tech: string;
   range: string;
-  consumption: string;
+  consumption?: string;
   recuperation?: string;
   heatPump: boolean;
 }
@@ -76,46 +76,46 @@ export interface Charging {
 // Carrocería, dimensiones y pesos
 export interface Body {
   type: string;
-  seats: number;
+  seats?: number;
   platform?: string;
 }
 export interface Dimensions {
-  length: string;
-  width: string;
-  height: string;
+  length?: string;
+  width?: string;
+  height?: string;
   dragCoefficient?: string;
-  wheelbase: string;
+  wheelbase?: string;
   clearance?: string;
 }
 export interface Weight {
-  unladen: string;
+  unladen?: string;
   gross?: string;
 }
 
 // Resto de especificaciones
 export interface Suspension {
-  front: string;
-  rear: string;
+  front?: string;
+  rear?: string;
 }
 export interface Cargo {
-  trunk: string;
+  trunk?: string;
   frunk?: string;
   towing?: string;
 }
 export interface Displays {
-  center: string;
-  driver: string;
+  center?: string;
+  driver?: string;
   headUp: boolean;
 }
 export interface Comfort {
-  seats: string;
-  roof: string;
-  parkingAids: string;
+  seats?: string;
+  roof?: string;
+  parkingAids?: string;
   connectivity?: string;
 }
 export interface Safety {
-  airbags: string;
-  drivingAids: string;
+  airbags?: string;
+  drivingAids?: string;
   selfDriving?: string;
   crashTests?: string;
   dvr?: boolean;
@@ -150,5 +150,5 @@ export interface CarSpecs {
 
 export interface Wheel {
   name: string;
-  size: string;
+  size?: string;
 }

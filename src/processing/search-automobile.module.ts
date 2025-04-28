@@ -5,7 +5,6 @@ import { SearchAutomobileController } from './controllers/search-automobile.cont
 import { AutomobileSearchWorkflow } from './graphs/automobile/automobile-search.workflow';
 import { StructureAutomobileAgent } from './agents/automobile/structure-automobile.agent';
 import { VectorStoreModule } from '../vector-store/vector-store.module';
-import { SearchAutomobileBrowserAgent } from './agents/automobile/search-automobile-browser.agent';
 import { NewsSearchAgent } from './agents/news/news-search.agent';
 import { StructureNewsAgent } from './agents/news/structure-news.agent';
 import { NewsSearchController } from './controllers/news-search.controller';
@@ -20,7 +19,6 @@ import { NewsSearchWorkflow } from './graphs/news/news-search.workflow';
     StructureNewsAgent,
     NewsSearchWorkflow,
     // agentes necesarios para el workflow
-    SearchAutomobileBrowserAgent,
     SearchAutomobileAgent,
     StructureAutomobileAgent,
     AutomobileSearchWorkflow,
