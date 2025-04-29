@@ -1,0 +1,10 @@
+{
+  "workbench.iconTheme": "vscode-icons",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always",
+    "source.fixAll": "always"
+  },
+  "files.eol": "\n",
+  "eslint.validate": ["javascript", "typescript"]
+}

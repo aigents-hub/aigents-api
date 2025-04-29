@@ -1,0 +1,294 @@
+@host = localhost:7000
+@sessionId = 063a4192-4056-404e-a227-47fc987e66af
+
+### comparison de los tres
+POST http://{{host}}/execute/comparison/{{sessionId}}
+Content-Type: application/json
+
+{
+  "cars": [
+        {
+          "specs": {
+            "model": "Model S Long Range",
+            "generation": "2nd Generation",
+            "market": "Global",
+            "alsoKnownAs": ["Tesla Model S LR"],
+            "driveType": "electric",
+            "battery": {
+              "capacity": "100 kWh",
+              "tech": "Lithium-ion 400 V NCA",
+              "range": "660 km EPA",
+              "consumption": "18.8 kWh/100 km",
+              "recuperation": "Regenerative braking",
+              "heatPump": true
+            },
+            "launch": {
+              "announced": "2012, June",
+              "released": "2012, June"
+            },
+            "status": "Available to order",
+            "basePrices": {
+              "currency": "USD",
+              "amount": 89990
+            },
+            "performance": {
+              "power": "670 hp",
+              "torque": "725 Nm",
+              "acceleration": "0–100 km/h in 3.2 s",
+              "maxSpeed": "209 km/h"
+            },
+            "body": {
+              "type": "5-door liftback",
+              "seats": 5,
+              "platform": "Tesla S Platform"
+            },
+            "dimensions": {
+              "length": "4978 mm",
+              "width": "1964 mm",
+              "height": "1445 mm",
+              "dragCoefficient": "0.24",
+              "wheelbase": "2960 mm",
+              "clearance": "140 mm"
+            },
+            "weight": {
+              "unladen": "1961 kg",
+              "gross": "2690 kg"
+            },
+            "suspension": {
+              "front": "Double wishbone",
+              "rear": "Multi-link"
+            },
+            "wheels": [
+              {
+                "name": "Alloy",
+                "size": "19\""
+              }
+            ],
+            "cargo": {
+              "trunk": "894 L",
+              "frunk": "150 L",
+              "towing": "2268 kg"
+            },
+            "displays": {
+              "center": "17\" touchscreen",
+              "driver": "12.3\" digital display",
+              "headUp": false
+            },
+            "comfort": {
+              "seats": "Heated front & rear",
+              "roof": "Panoramic glass roof",
+              "parkingAids": "360° camera and parking sensors",
+              "connectivity": "Bluetooth, Wi-Fi"
+            },
+            "safety": {
+              "airbags": "8 airbags",
+              "drivingAids": "AEB, Lane Assist, Autopilot (optional)",
+              "selfDriving": "Full Self-Driving (optional)",
+              "crashTests": "NCAP 5 stars",
+              "dvr": true
+            }
+          },
+          "images": [
+            {
+              "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/2019_Tesla_Model_3_Performance_AWD_Front.jpg/1600px-2019_Tesla_Model_3_Performance_AWD_Front.jpg?20191216153036",
+              "description": "2019 Tesla Model 3 Performance AWD Front"
+            },
+            {
+              "url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Tesla_Model_3_black_%281%29.jpg",
+              "description": "Tesla Model 3 black"
+            }
+          ],
+          "descriptionShort": "Sedán eléctrico de lujo con doble motor AWD y autonomía de 660 km EPA.",
+          "descriptionLong": "El Tesla Model S Long Range combina un rendimiento de 670 hp, 0–100 km/h en 3.2 s y una carga rápida CCS de hasta 250 kW. Diseño interior minimalista con pantalla táctil de 17″ y capacidad de remolque de 2268 kg."
+        },
+
+        {
+          "specs": {
+            "model": "Model 3 Performance",
+            "generation": "2nd Generation",
+            "market": "Global",
+            "alsoKnownAs": ["Tesla Model 3 Perf"],
+            "driveType": "electric",
+            "battery": {
+              "capacity": "82 kWh",
+              "tech": "Liquid-cooled Li-ion 400 V",
+              "range": "567 km EPA",
+              "consumption": "16.7 kWh/100 km",
+              "recuperation": "Regenerative braking",
+              "heatPump": true
+            },
+            "launch": {
+              "announced": "2016, March",
+              "released": "2017, July"
+            },
+            "status": "Available to order",
+            "basePrices": {
+              "currency": "USD",
+              "amount": 62990
+            },
+            "performance": {
+              "power": "510 hp",
+              "torque": "639 Nm",
+              "acceleration": "0–100 km/h in 3.1 s",
+              "maxSpeed": "261 km/h"
+            },
+            "body": {
+              "type": "4-door sedan",
+              "seats": 5,
+              "platform": "Tesla 3 Platform"
+            },
+            "dimensions": {
+              "length": "4694 mm",
+              "width": "1933 mm",
+              "height": "1443 mm",
+              "dragCoefficient": "0.23",
+              "wheelbase": "2875 mm",
+              "clearance": "140 mm"
+            },
+            "weight": {
+              "unladen": "1847 kg",
+              "gross": "2470 kg"
+            },
+            "suspension": {
+              "front": "MacPherson strut",
+              "rear": "Multi-link"
+            },
+            "wheels": [
+              {
+                "name": "Sport Alloy",
+                "size": "20\""
+              }
+            ],
+            "cargo": {
+              "trunk": "425 L",
+              "frunk": "97 L",
+              "towing": "1360 kg"
+            },
+            "displays": {
+              "center": "15\" touchscreen",
+              "driver": "12.3\" digital display",
+              "headUp": false
+            },
+            "comfort": {
+              "seats": "Heated front & rear",
+              "roof": "Glass roof",
+              "parkingAids": "6 sensors & rear camera",
+              "connectivity": "Android Auto & Apple CarPlay"
+            },
+            "safety": {
+              "airbags": "8 airbags",
+              "drivingAids": "AEB, Lane Assist, Autopilot",
+              "selfDriving": "Full Self-Driving (optional)",
+              "crashTests": "NCAP 5 stars",
+              "dvr": true
+            }
+          },
+          "images": [
+            {
+              "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/2019_Tesla_Model_3_Performance_AWD_Front.jpg/1600px-2019_Tesla_Model_3_Performance_AWD_Front.jpg?20191216153036",
+              "description": "2019 Tesla Model 3 Performance AWD Front"
+            },
+            {
+              "url": "https://upload.wikimedia.org/wikipedia/commons/2/2c/Tesla_Model_3_black_%281%29.jpg",
+              "description": "Tesla Model 3 black"
+            }
+          ],
+          "descriptionShort": "Sedán eléctrico de alto rendimiento con AWD y 0–100 km/h en 3.1 s.",
+          "descriptionLong": "El Tesla Model 3 Performance ofrece 510 hp, velocidad punta de 261 km/h y carga superrápida CCS hasta 250 kW, con interior minimalista y tecnología Autopilot."
+        },
+
+        {
+          "specs": {
+            "model": "330i",
+            "generation": "G20",
+            "market": "Global",
+            "alsoKnownAs": [],
+            "driveType": "combustion",
+            "combustion": {
+              "fuelType": "Gasoline",
+              "displacement": "2.0 L",
+              "power": "255 hp",
+              "torque": "400 Nm",
+              "consumption": "6.9 L/100 km",
+              "emissions": "158 g/km CO₂"
+            },
+            "launch": {
+              "announced": "2018, June",
+              "released": "2019, March"
+            },
+            "status": "Available to order",
+            "basePrices": {
+              "currency": "USD",
+              "amount": 40900
+            },
+            "performance": {
+              "power": "255 hp",
+              "torque": "400 Nm",
+              "acceleration": "0–100 km/h in 5.8 s",
+              "maxSpeed": "250 km/h"
+            },
+            "body": {
+              "type": "4-door sedan",
+              "seats": 5,
+              "platform": "CLAR"
+            },
+            "dimensions": {
+              "length": "4709 mm",
+              "width": "1827 mm",
+              "height": "1442 mm",
+              "dragCoefficient": "0.26",
+              "wheelbase": "2851 mm",
+              "clearance": "140 mm"
+            },
+            "weight": {
+              "unladen": "1490 kg",
+              "gross": "1935 kg"
+            },
+            "suspension": {
+              "front": "Double wishbone",
+              "rear": "5-link"
+            },
+            "wheels": [
+              {
+                "name": "Alloy",
+                "size": "18\""
+              }
+            ],
+            "cargo": {
+              "trunk": "480 L",
+              "frunk": "N/A",
+              "towing": "2000 kg"
+            },
+            "displays": {
+              "center": "10.25\" touchscreen",
+              "driver": "12.3\" digital display",
+              "headUp": true
+            },
+            "comfort": {
+              "seats": "Leather heated front seats",
+              "roof": "Sunroof optional",
+              "parkingAids": "Front & rear sensors",
+              "connectivity": "Android Auto & Apple CarPlay"
+            },
+            "safety": {
+              "airbags": "8 airbags",
+              "drivingAids": "AEB, Lane Assist",
+              "crashTests": "NCAP 5 stars",
+              "dvr": false
+            }
+          },
+          "images": [
+            {
+              "url": "https://commons.wikimedia.org/wiki/File:2019_BMW_330i_M_Sport_2.0_Front.jpg",
+              "description": "BMW 330i G20 M Sport 2019"
+            },
+            {
+              "url": "https://commons.wikimedia.org/wiki/File:BMW_330i_G20_M_Sport_2019.jpg",
+              "description": "BMW 330i G20 M Sport 2019"
+            }
+          ],
+          "descriptionShort": "Sedán de lujo con motor 2.0 L turbo y 255 hp.",
+          "descriptionLong": "El BMW 330i G20 ofrece 255 hp, 0–100 km/h en 5.8 s y tracción trasera (xDrive opcional), con interior enfocado al conductor y acabado premium."
+        }
+  ]
+}

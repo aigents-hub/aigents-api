@@ -1,0 +1,105 @@
+@host = localhost:7000
+
+### Buscar automóviles – ejemplo 1
+POST http://{{host}}/automobiles/search
+Content-Type: application/json
+
+{
+  "query": "Ferrari Portofino specifications"
+}
+
+###
+
+### Buscar automóviles – ejemplo 2
+POST http://{{host}}/automobiles/search
+Content-Type: application/json
+
+{
+  "query": "Tesla Model 3 range battery"
+}
+
+
+### Buscar automóviles – ejemplo 3
+POST http://{{host}}/automobiles/search
+Content-Type: application/json
+
+{
+  "query": "Ford Mustang combustion engine specifications"
+}
+
+###
+
+### Buscar automóviles – ejemplo 3 (consulta vacía)
+POST http://{{host}}/automobiles/search
+Content-Type: application/json
+
+{
+  "query": ""
+}
+
+###
+
+#-------
+
+
+### Buscar automóviles – ejemplo 1
+POST http://{{host}}/automobiles/search/agent
+Content-Type: application/json
+
+{
+  "query": "Ferrari Portofino specifications"
+}
+
+###
+
+### Buscar automóviles – ejemplo 2
+POST http://{{host}}/automobiles/search/agent
+Content-Type: application/json
+
+{
+  "query": "Tesla Model 3 range battery"
+}
+
+###
+
+### Buscar automóviles – ejemplo 3 (consulta vacía)
+POST http://{{host}}/automobiles/search/agent
+Content-Type: application/json
+
+{
+  "query": ""
+}
+
+
+### Buscar automóviles – búsqueda vectorial (vector store)
+POST http://{{host}}/automobiles/search/vector
+Content-Type: application/json
+
+{
+  "query": "Ferrari Portofino",
+  "threshold": 0.2,
+  "limit": 5,
+  "offset": 0
+}
+
+###
+
+### Búsqueda vectorial – sin umbral (usa default)
+POST http://{{host}}/automobiles/search/vector
+Content-Type: application/json
+
+{
+  "query": "Ford Mustang engine specs",
+  "limit": 3
+}
+
+###
+
+### Búsqueda vectorial – consulta vacía (debe devolver []) 
+POST http://{{host}}/automobiles/search/vector
+Content-Type: application/json
+
+{
+  "query": "",
+  "threshold": 0.1
+}

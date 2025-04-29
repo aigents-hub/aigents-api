@@ -1,0 +1,14 @@
+@host = localhost:7000
+@sessionId = e187623d-70dc-435f-b521-194b34ff2cf2
+
+### 1) searching true
+POST http://{{host}}/execute/searching/{{sessionId}}
+Content-Type: application/json
+
+{ "searching": true }
+
+### 1) searching false
+POST http://{{host}}/execute/searching/{{sessionId}}
+Content-Type: application/json
+
+{ "searching": false }

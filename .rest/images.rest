@@ -1,0 +1,16 @@
+@host = localhost:7000
+@autoId = 123e4567-e89b-12d3-a456-426614174000
+
+###  Upload Tesla Model Y image
+POST http://{{host}}/automobiles/{{autoId}}/images
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="tesla-model-y.webp"
+Content-Type: image/webp
+
+< ./contents/tesla-model-y.webp
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###  Download Tesla Model Y image
+GET http://{{host}}/automobiles/{{autoId}}/images/tesla-model-y.webp

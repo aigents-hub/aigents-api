@@ -1,0 +1,21 @@
+@host = localhost:7000
+@sessionId = e187623d-70dc-435f-b521-194b34ff2cf2
+
+### 1) Tesla Model S Long Range
+POST http://{{host}}/execute/news/{{sessionId}}
+Content-Type: application/json
+
+[
+  {
+    "title": "Refreshed Tesla Model Y",
+    "sourceUrl": "https://www.carscoops.com/2025/01/2025-tesla-model-y-brings-sharper-looks-more-refinement-and-longer-range/?utm_source=openai",
+    "summary": "Tesla has launched the refreshed Model Y, featuring a redesigned front end, enhanced interior materials, improved performance, and a longer driving range.",
+    "content": "# Refreshed Tesla Model Y\n\nTesla has introduced a significant update to its popular Model Y, referred to as the \"Juniper\" version. This refreshed model showcases a redesigned front end that includes split headlights and a full-width LED light bar, taking design cues from the Cybertruck and Cybercab.\n\n## Key Features\n- **Exterior Design**: The new front end design offers a sharper and more modern look.\n- **Interior Enhancements**: The interior has been upgraded with more refined materials and the latest technology, providing a more luxurious feel.\n- **Performance Improvements**: The Model Y Juniper boasts improved performance metrics, offering a quieter ride and an extended driving range compared to its predecessor.\n\nThis update reflects Tesla's commitment to continuous improvement and innovation in its vehicle lineup."
+  },
+  {
+    "title": "Upcoming Second-Generation Tesla Roadster",
+    "sourceUrl": "https://en.wikipedia.org/wiki/Tesla_Roadster_%28second_generation%29?utm_source=openai",
+    "summary": "The second-generation Tesla Roadster is set to deliver remarkable performance, including a 0 to 60 mph acceleration in just 1.9 seconds, with production expected to start in 2025.",
+    "content": "# Upcoming Second-Generation Tesla Roadster\n\nThe second-generation Tesla Roadster is an eagerly anticipated electric sports car that promises to redefine performance standards in the automotive industry. Initially announced in 2017, the production of the Roadster has faced several delays, but as of April 2025, Tesla CEO Elon Musk has confirmed that production is expected to begin this year.\n\n## Performance Highlights\n- **Acceleration**: The Roadster aims to achieve an astonishing 0 to 60 mph in just 1.9 seconds, making it one of the fastest production cars ever.\n- **Design and Features**: While specific details about the design and features are still emerging, the Roadster is expected to incorporate cutting-edge technology and design elements that reflect Tesla's innovative spirit.\n\nAs Tesla continues to evolve its product lineup, the Roadster stands out as a flagship model that showcases the brand's commitment to high-performance electric vehicles."
+  }
+]
